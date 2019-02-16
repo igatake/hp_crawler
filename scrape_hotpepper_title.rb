@@ -10,7 +10,7 @@ time = Time.now.strftime('%Y%m%d-%H%M%S')
 header = ['name', 'url', 'drinks']
 url = 'https://www.hotpepper.jp/yoyaku/SA11/Y050/'
 
-CSV.open("result_ikebukuro_#{time}.csv", 'a') do |csv|
+CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
   csv << header
 
   Anemone.crawl(
