@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'anemone'
-gem 'nokogiri'
-gem 'mechanize'
 gem 'capybara'
-gem 'selenium-webdriver'
-gem 'launchy'
 gem 'csv'
+gem 'launchy'
+gem 'mechanize'
+gem 'nokogiri'
+gem 'selenium-webdriver'
 gem 'solargraph'
 
 # gem "rails"

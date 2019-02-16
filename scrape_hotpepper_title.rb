@@ -3,11 +3,10 @@ require 'open-uri'
 require 'nokogiri'
 require 'anemone'
 require 'kconv'
-require 'mechanize'
 require 'csv'
 
 time = Time.now.strftime('%Y%m%d-%H%M%S')
-header = ['name', 'url', 'drinks']
+header = %w[name url drinks]
 url = 'https://www.hotpepper.jp/yoyaku/SA11/Y050/'
 
 CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
@@ -59,45 +58,46 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
           sleep(5)
 
           begin
-            doc_drink = Nokogiri::HTML(URI(drink_url).read, nil, 'utf-8')
+              doc_drink = Nokogiri::HTML(URI(drink_url).read, nil, 'utf-8')
 
-            # drinkメニューHTML取得
-            drinks = doc_drink.xpath(
-              "//div[@class='shopInner']/h3"
-            )
+              # drinkメニューHTML取得
+              drinks = doc_drink.xpath(
+                "//div[@class='shopInner']/h3"
+              )
 
-            drinks.each do
-              # drink名取得
-              drink_name = doc_drink.xpath(
-                "//h3[#{drink_num}]"
-              ).text
+              drinks.each do
+                # drink名取得
+                drink_name = doc_drink.xpath(
+                  "//h3[#{drink_num}]"
+                ).text
 
-              # drink値段取得
-              drink_price = doc_drink.xpath(
-                "//dl[@class='price' and position()=#{drink_num}]/dd"
-              ).text
+                # drink値段取得
+                drink_price = doc_drink.xpath(
+                  "//dl[@class='price' and position()=#{drink_num}]/dd"
+                ).text
 
-              drink = drink_name, [drink_price]
-              drink_array.push(drink)
-              drink_num += 1
-            end
-            sleep(5)
-            rescue => OpenURI::HTTPError
-              puts 'drinkページがないよー'
+                drink = drink_name, [drink_price]
+                drink_array.push(drink)
+                drink_num += 1
+              end
               sleep(5)
-              next
+          rescue StandardError => OpenURI::HTTPError
+            puts 'drinkページがないよー'
+            sleep(5)
+            next
             end
-            store_data = [store_name, store_id, drink_array]
-            puts store_data
-            store_array.push(store_data)
-            store_array.each do |item|
-              csv << item
-            end
-          end
-      rescue => OpenURI::HTTPError
+          store_data = [store_name, store_id, drink_array]
+          puts store_data
+          store_array.push(store_data)
+          puts store_array
+        end
+      rescue StandardError => OpenURI::HTTPError
         puts 'そんなことある！？'
         sleep(5)
         next
+      end
+      store_array.each do |item|
+        csv << item
       end
       sleep(10)
     end
