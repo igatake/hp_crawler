@@ -81,7 +81,8 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
                 drink_num += 1
               end
               sleep(5)
-          rescue StandardError => OpenURI::HTTPError
+          rescue => e
+            p e
             puts 'drinkページがないよー'
             sleep(5)
             next
@@ -91,7 +92,8 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
           store_array.push(store_data)
           puts store_array
         end
-      rescue StandardError => OpenURI::HTTPError
+      rescue => e
+        p e
         puts 'そんなことある！？'
         sleep(5)
         next
@@ -102,6 +104,18 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
       sleep(10)
     end
   end
+end
+
+rows = {}
+CSV.foreach("./lib/result_ikebukuro_#{time}.csv", headers: true) do |row|
+  rows[row['url']] = row if !rows.key?(row['url']) 
+end
+
+CSV.open("./lib/new_result_ikebukuro_#{time}.csv",'w') do |newcsv|
+  newcsv << header
+   rows.each_value do |row|
+      newcsv << row
+   end
 end
 
 puts '終了'
