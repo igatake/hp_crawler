@@ -99,7 +99,8 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
                 drink_num += 1
               end
               sleep(5)
-          rescue StandardError => OpenURI::HTTPError
+          rescue => e
+            p e
             puts 'drinkページがないよー'
             sleep(5)
             next
@@ -118,5 +119,4 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
     end
   end
 end
-
 puts '終了'
