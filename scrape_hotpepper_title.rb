@@ -6,15 +6,8 @@ require 'kconv'
 require 'csv'
 
 time = Time.now.strftime('%Y%m%d-%H%M%S')
-header = %w[name url drink price]
+header = %w[drink price name url]
 url = 'https://www.hotpepper.jp/yoyaku/SA11/Y050/'
-# BEERS = /アサヒ|
-#         キリン|
-#         サッポロ|
-#         ヱビスビール|
-#         ザ・モルツ|
-#         ザ・プレミアム・モルツ|
-#         ビール/
 
 CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
   csv << header
@@ -82,7 +75,7 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
                 # 二つ目の条件で入ってて欲しくない単語を指定
                 # 将来的には綺麗にしたい
                 if (/ビール|アサヒ|キリン|サッポロ|ヱビスビール|エビス|モルツ/ =~ drink_name) &&
-                  (/ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink_name) &&
+                  (/金麦|ノンアルコール|ベース|ゼロ|フリー|零|甘太郎|クリア|ホップ|シャンディ|トマト|レッド|カシス|オレンジ|カンパリ/ !~ drink_name) &&
                   (drink_name.length <= 25) && # 25文字以上の生ビールないでしょ
                   (drink_price != 0) && # priceがたまに0のがあるから排除
                   (drink_price <= 1000) then #1000円以上のビールは飲み放題とかかぶるからなし
