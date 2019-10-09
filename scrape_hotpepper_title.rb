@@ -38,19 +38,32 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
         )
 
         stores.each do |store|
-          # 店舗名取得
-          store_name = store.xpath(
-            ".//a[@class='fs18 bold lh22 marB1']"
-          ).text
 
           # 店舗id取得
           store_url = store.xpath(
             ".//a[@class='fs18 bold lh22 marB1']"
           ).attribute('href').text
 
+          shop_url = "https://www.hotpepper.jp#{store_url}"
           drink_url = "https://www.hotpepper.jp#{store_url}drink/"
           drink_num = 1
           sleep(5)
+
+          begin
+            doc_each_shop = Nokogiri::HTML(URI(shop_url).read, nil, 'utf-8')
+
+            # 店舗名取得
+            shop_name = p doc_each_shop.xpath(".//h1[@class='shopName']").text
+
+            # 店舗の住所取得
+            shop_address = p doc_each_shop.xpath(".//td/address[position()=1]").text.strip
+
+          rescue => e
+            p e
+            p '店が潰れてます'
+            sleep(5)
+          end
+
 
           begin
               doc_drink = Nokogiri::HTML(URI(drink_url).read, nil, 'utf-8')
@@ -79,7 +92,7 @@ CSV.open("./lib/result_ikebukuro_#{time}.csv", 'a') do |csv|
                   (drink_name.length <= 25) && # 25文字以上の生ビールないでしょ
                   (drink_price != 0) && # priceがたまに0のがあるから排除
                   (drink_price <= 1000) then #1000円以上のビールは飲み放題とかかぶるからなし
-                  p store_array.push(drink_name, drink_price, store_name, store_url)
+                  p store_array.push(drink_name, drink_price, shop_name, store_url, shop_address)
                   csv << store_array
                   store_array = []
                 end
